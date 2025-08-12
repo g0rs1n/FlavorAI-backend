@@ -18,4 +18,32 @@ model User {
   avatarPath String @default("https://placehold.co/400x400.png") @map("avatar_path")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  recipes Recipe[] @relation("UserRecipes")
+  ratings Rating[] @relation("UserRecipeRatings")
+}
+
+model Recipe {
+  id Int @id @default(autoincrement())
+  authorId Int @map("author_id")
+  title String
+  description String?
+  ingredients String
+  instructions String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  author User @relation("UserRecipes", fields: [authorId], references: [id])
+  ratings Rating[] @relation("RecipeRatings")
+}
+
+model Rating {
+  id Int @id @default(autoincrement())
+  userId Int @map("user_id")
+  recipeId Int @map("recipe_id")
+  score Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation("UserRecipeRatings", fields: [userId], references: [id])
+  recipe Recipe @relation("RecipeRatings", fields: [recipeId], references: [id])
 }

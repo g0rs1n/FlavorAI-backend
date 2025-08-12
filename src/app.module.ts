@@ -3,6 +3,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RecipeModule } from './recipe/recipe.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -12,7 +14,9 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     AuthModule,
     UserModule,
-    PrismaModule
+    PrismaModule,
+    RecipeModule,
+    RatingModule
   ],
   controllers: [],
   providers: [],
