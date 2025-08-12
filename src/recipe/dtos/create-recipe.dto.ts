@@ -1,7 +1,8 @@
 import { 
     IsString, 
     IsOptional, 
-    MinLength 
+    MinLength,
+    ValidateIf
 } from 'class-validator';
 
 export class CreateRecipeDto {
@@ -11,6 +12,7 @@ export class CreateRecipeDto {
 
   @IsOptional()
   @IsString()
+  @ValidateIf((_, value) => value?.trim().length > 0)
   @MinLength(10, { message: 'Description must be at least 10 characters long' })
   description?: string;
 

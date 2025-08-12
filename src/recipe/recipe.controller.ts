@@ -33,4 +33,14 @@ export class RecipeController {
     return this.recipeService.createRecipe(dto, user)
   }
 
+  @HttpCode(200)
+  @Get("/my")
+  @UseGuards(AuthGuard("jwt"))
+  getMyRecipe (
+    @Request() req
+  ) {
+    const user = req.user
+    return this.recipeService.getMyRecipe(user)
+  }
+
 }

@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRecipeDto } from './dtos/create-recipe.dto';
 import { User } from '@prisma/client';
 
+
 @Injectable()
 export class RecipeService {
 
@@ -15,8 +16,19 @@ export class RecipeService {
 
     async getAllRecipes () {
         try {
-            const allRecipes = await this.prisma.recipe.findMany()
-            return allRecipes
+            const allRecipes = await this.prisma.recipe.findMany({
+                include: {
+                    ratings: true
+                }
+            })
+            return allRecipes.map(recipe => ({
+                ...recipe,
+                averageRating:
+                    recipe.ratings.length > 0
+                    ? recipe.ratings.reduce((sum, r) => sum + r.score, 0) /
+                        recipe.ratings.length
+                    : null
+            }))
         } catch (error) {
             throw new HttpException("Error: api recipe - getAllRecipe", error)
         }
@@ -35,6 +47,35 @@ export class RecipeService {
             return newRecipe
         } catch (error) {
             throw new HttpException("Error: api recipe - createRecipe", error)
+        }
+    }
+
+    async getMyRecipe (user: User) {
+        try {
+            const myRecipesWithAvgRating = await this.prisma.recipe.findMany({
+                where: {
+                    authorId: user.id,
+                },
+                include: {
+                    ratings: true,
+                },
+            });
+
+            const result = myRecipesWithAvgRating.map(recipe => {
+                const avgRating =
+                    recipe.ratings.length > 0
+                    ? recipe.ratings.reduce((sum, r) => sum + r.score, 0) / recipe.ratings.length
+                    : 0;
+
+                return {
+                    ...recipe,
+                    averageRating: avgRating,
+                }
+            })
+
+            return result
+        } catch (error) {
+            throw new HttpException("Error: api getMyRecipe", error)
         }
     }
 
